@@ -384,18 +384,15 @@ class Module:
         return name
 
     def _load_gtk_themes(self):
-        """ Only shows themes that have variations for gtk+-3 and gtk+-2 """
+        """Only shows themes that have variations for gtk+-3 and gtk+-2 """
         dirs = THEME_FOLDERS
         valid = walk_directories(dirs, self.filter_func_gtk_dir, return_directories=True)
         valid.sort(key=lambda a: self.get_theme_sort_key(a[0]))
         res = []
         for i in valid:
             for j in res:
-                if i[0] == j[0]:
-                    if i[1] == dirs[0]:
-                        continue
-                    else:
-                        res.remove(j)
+                if i[0] == j[0] and i[1] != dirs[0]:
+                    res.remove(j)
             res.append((i[0], i[1]))
         return res
 
@@ -429,11 +426,8 @@ class Module:
         res = []
         for i in valid:
             for j in res:
-                if i[0] == j:
-                    if i[1] == dirs[0]:
-                        continue
-                    else:
-                        res.remove(j)
+                if i[0] == j and i[1] != dirs[0]:
+                    res.remove(j)
             res.append(i[0])
         return res
 
@@ -444,11 +438,8 @@ class Module:
         res = []
         for i in valid:
             for j in res:
-                if i[0] == j[0]:
-                    if i[1] == dirs[0]:
-                        continue
-                    else:
-                        res.remove(j)
+                if i[0] == j[0] and i[1] != dirs[0]:
+                    res.remove(j)
             res.append((i[0], i[1]))
         return res
 
@@ -459,11 +450,8 @@ class Module:
         res = []
         for i in valid:
             for j in res:
-                if i[0] == j[0]:
-                    if i[1] == dirs[0]:
-                        continue
-                    else:
-                        res.remove(j)
+                if i[0] == j[0] and i[1] != dirs[0]:
+                    res.remove(j)
             res.append((i[0], i[1]))
         return res
 

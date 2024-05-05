@@ -71,6 +71,7 @@ function init() {
     deskletMeta = Extension.Type.DESKLET.legacyMeta;
     deskletsLoaded = false;
 
+    repositionDeskletsOnDisplays(); // XXX
     definitions = getDefinitions();
 
     return initEnabledDesklets().then(function() {
@@ -153,7 +154,7 @@ function removeDesklet(uuid, desklet_id){
  *
  * Returns (dictionary): Associative array of three items
  */
-function getDefinitions() {
+function getDefinitions() { // XXX
     let _definitions = [];
     rawDefinitions = global.settings.get_strv(ENABLED_DESKLETS_KEY);
 
@@ -348,12 +349,50 @@ function _createDesklets(extension, deskletDefinition) {
     return desklet;
 }
 
-function createDeskletDefinition(definition) {
+function _repositionDeskletDefinition(definition, workspace_size) { // XXX
     let elements = definition.split(":");
+
+    if (elements.length == 4) {
+        elements.push(workspace_size.width);
+        elements.push(workspace_size.height);
+        let newDefinition = elements.join(":");
+        return newDefinition;
+    } else if (elements.length >= 6) {
+        let last_width = elements[4];
+        let last_height = elements[5];
+        if (last_height != workspace_size.height || last_width != workspace_size.width) {
+
+        }
+    } else {
+        // TODO: display err msg
+    }
+}
+
+function repositionDeskletsOnDisplays() { // XXX
+    let n_monitors = global.display.get_n_monitors();
+    let workspace = global.workspace_manager.get_workspace_by_index(idx);
+    let size =  workspace.get_work_area_all_monitors();
+    let mon = global.display.get_monitor_geometry(1);
+    let definitions = global.settings.get_strv(ENABLED_DESKLETS_KEY);
+
+    let newDefinitions = [];
+    for (let definition of definitions) {
+        let definition = _repositionDeskletDefinition(definition, size);
+        newDefinitions.push(definition);
+    }
+    
+
+    global.settings.set_strv(ENABLED_DESKLETS_KEY, enabledDesklets); // XXX
+}
+
+function createDeskletDefinition(definition) { // XXX
+    let elements = definition.split(":");
+
     if (elements.length !== 4) {
         global.logError("Bad desklet definition: " + definition);
         return null;
     }
+
     let deskletDefinition = {
         uuid: elements[0],
         desklet_id: elements[1],
@@ -545,7 +584,7 @@ DeskletContainer.prototype = {
         return DND.DragMotionResult.MOVE_DROP;
     },
 
-    acceptDrop: function(source, actor, x, y, time) {
+    acceptDrop: function(source, actor, x, y, time) { // XXX
         if (!(source instanceof Desklet.Desklet)) return false;
         Main.uiGroup.remove_actor(actor);
         this.actor.add_actor(actor);
@@ -573,7 +612,7 @@ DeskletContainer.prototype = {
 
         // We already moved this desklet, so skipping _onEnabledDeskletsChanged
         global.settings.disconnect(deskletChangeKey);
-        global.settings.set_strv(ENABLED_DESKLETS_KEY, enabledDesklets);
+        global.settings.set_strv(ENABLED_DESKLETS_KEY, enabledDesklets); // XXX
         deskletChangeKey = global.settings.connect('changed::' + ENABLED_DESKLETS_KEY, _onEnabledDeskletsChanged);
 
         this._dragPlaceholder.hide();

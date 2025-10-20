@@ -12,7 +12,6 @@ const Settings = imports.ui.settings;
 const UserWidget = imports.ui.userWidget;
 
 const DIALOG_ICON_SIZE = 64;
-const USER_DEFAULT_IMG_PATH = "/usr/share/cinnamon/faces/user-generic.png";
 
 class CinnamonUserApplet extends Applet.TextApplet {
     constructor(orientation, panel_height, instance_id) {
@@ -176,7 +175,9 @@ class CinnamonUserApplet extends Applet.TextApplet {
                 this._panel_avatar.destroy()
             }
 
-            this._panel_avatar = new UserWidget.Avatar(this._user, { iconSize: this.getPanelIconSize(St.IconType.FULLCOLOR) });
+            let iconExists = this._user && GLib.file_test(this._user.get_icon_file(), GLib.FileTest.EXISTS);
+            let iconSize = this.getPanelIconSize(iconExists ? St.IconType.FULLCOLOR : St.IconType.SYMBOLIC);
+            this._panel_avatar = new UserWidget.Avatar(this._user, { iconSize });
             this._panel_icon_box.set_child(this._panel_avatar);
             this._panel_avatar.update();
             this._panel_avatar.show();

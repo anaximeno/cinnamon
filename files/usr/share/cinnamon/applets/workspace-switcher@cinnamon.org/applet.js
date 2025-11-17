@@ -148,11 +148,7 @@ class WindowGraph {
     constructor(workspaceGraph, metaWindow, tracker, iconEnabled, iconSize) {
         this.workspaceGraph = workspaceGraph;
         this.metaWindow = metaWindow;
-        this.tracker = tracker;
-        this.iconEnabled = iconEnabled;
-        this._iconSize = iconSize;
-        this._iconScaledSize = this._iconSize * global.ui_scale;
-        this._halvedIconScaledSize = this._iconScaledSize * 0.5;
+        this.tracker = tracker;     
 
         this.drawingArea = new St.DrawingArea({
             style_class: 'windows',
@@ -161,12 +157,22 @@ class WindowGraph {
             important: true,
         });
 
-        this.drawingArea.connect('repaint', this.onRepaint.bind(this));
+        this.iconEnabled = iconEnabled;
+        this.iconIsResizeable = iconEnabled && !iconSize;
+
+        let rect = this.intersectionRect();
+
+        this.iconSize = this.getIdealIconSize(
+            rect.width,
+            rect.height,
+        );
 
         this._icon = null;
+        if (this.iconEnabled) {
+            this.updateIcon(rect);
+        }
 
-        if (this.iconEnabled)
-            this.updateIcon(this.intersectionRect());
+        this.drawingArea.connect('repaint', this.onRepaint.bind(this));
     }
 
     get icon() {
@@ -175,15 +181,37 @@ class WindowGraph {
         return this._icon;
     }
 
+    set iconSize(size) {
+        this._iconSize = size;
+        this._iconScaledSize = this._iconSize * global.ui_scale;
+        this._halvedIconScaledSize = this._iconScaledSize * 0.5;
+    }
+
+    get iconSize() {
+        return this._iconSize;
+    }
+
     calcIconPos(rect) {
-        const x = Math.round(rect.x + rect.width / 2 - this._halvedIconScaledSize);
-        const y = Math.round(rect.y + rect.height / 2 - this._halvedIconScaledSize);
+        const x = Math.round(rect.x + rect.width * 0.5 - this._halvedIconScaledSize);
+        const y = Math.round(rect.y + rect.height * 0.5 - this._halvedIconScaledSize);
         return [x, y];
     }
 
     updateIcon(rect) {
         if (this.iconEnabled) {
+            if (this.iconIsResizeable) {
+                this.iconSize = this.getIdealIconSize(
+                    rect.width,
+                    rect.height,
+                );
+                this.icon.set_size(
+                    Math.round(this.iconSize * global.ui_scale),
+                    Math.round(this.iconSize * global.ui_scale)
+                );
+            }
+
             const [x, y] = this.calcIconPos(rect);
+
             this.icon.set_position(x, y);
             if (rect.width < this._iconScaledSize || rect.height < this._iconScaledSize) {
                 this.icon.set_opacity(0);
@@ -278,6 +306,18 @@ class WindowGraph {
         return iconActor;
     }
 
+    getIdealIconSize(width, height) {
+        const maxAllowed = (Math.min(width, height) * 0.70) / global.ui_scale;
+
+        for (let i = DEFAULT_ICON_SIZES.length - 1; i >= 0; i--) {
+            if (DEFAULT_ICON_SIZES[i] <= maxAllowed) {
+                return DEFAULT_ICON_SIZES[i];
+            }
+        }
+
+        return DEFAULT_ICON_SIZES[0];
+    }
+
     destroy() {
         if (this._icon) {
             this._icon.destroy();
@@ -341,18 +381,6 @@ class WorkspaceGraph extends WorkspaceButton {
         }
     }
 
-    getIdealIconSize() {
-        const maxAllowed = (Math.min(this.width, this.height) * 0.55) / global.ui_scale;
-
-        for (let i = DEFAULT_ICON_SIZES.length - 1; i >= 0; i--) {
-            if (DEFAULT_ICON_SIZES[i] <= maxAllowed) {
-                return DEFAULT_ICON_SIZES[i];
-            }
-        }
-
-        return DEFAULT_ICON_SIZES[0];
-    }
-
     setGraphSize() {
         this.workspace_size = this.workspace.get_work_area_all_monitors();
 
@@ -405,7 +433,7 @@ class WorkspaceGraph extends WorkspaceButton {
         this.windowsGraphs = [];
 
         const iconEnabled = this.applet.show_window_icons;
-        const iconSize = this.applet.window_icon_size == -1 ? this.getIdealIconSize() : this.applet.window_icon_size;
+        const iconSize = this.applet.window_icon_size == -1 ? null : this.applet.window_icon_size;
         const tracker = Cinnamon.WindowTracker.get_default();
 
         this.focusGraph = null;

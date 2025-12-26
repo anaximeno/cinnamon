@@ -1148,7 +1148,7 @@ class AppGroup {
     updateNotificationsBadge() {
         const nCount = Main.notificationDaemon.getNotificationCountForApp(this.groupState.app);
 
-        if (nCount > 0 && this.state.settings.enableNotificationBadges) {
+        if (this.groupState.windowCount > 0 && nCount > 0 && this.state.settings.enableNotificationBadges) {
             this.notificationsBadgeLabel.text = nCount.toString();
             this.notificationsBadge.show();
         } else {

@@ -278,7 +278,7 @@ class SimpleMenuItem {
         this.label = new St.Label({ text: label });
         if (styleClass)
             this.label.set_style_class_name(styleClass);
-        this.label.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+        this.label.clutter_text.ellipsize = Pango.EllipsizeMode.MIDDLE;
         this.actor.add_actor(this.labelContainer);
         this.labelContainer.add_actor(this.label);
         this.actor.set_label_actor(this.label);

@@ -10,7 +10,7 @@ const {RESERVE_KEYS} = require('./constants');
 class Workspace {
     constructor(params) {
         this.state = params.state;
-        this.state.connect({
+        this.stateConnectionId = this.state.connect({
             orientation: () => this.on_orientation_changed(false)
         });
         this.workspaceState = createStore({
@@ -420,6 +420,9 @@ class Workspace {
     }
 
     destroy() {
+        if (this.stateConnectionId) {
+            this.state.disconnect(this.stateConnectionId);
+        }
         this.signals.disconnectAllSignals();
         this.appGroups.forEach( appGroup => appGroup.destroy() );
         this.workspaceState.destroy();

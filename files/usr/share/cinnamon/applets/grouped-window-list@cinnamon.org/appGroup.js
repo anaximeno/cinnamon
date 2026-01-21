@@ -85,7 +85,7 @@ class AppGroup {
             pressed: true
         });
 
-        this.groupState.connect({
+        this.groupStateConnectionId = this.groupState.connect({
             isFavoriteApp: () => this.handleFavorite(true),
             getActor: () => this.actor,
             launchNewInstance: (...args) => this.launchNewInstance(...args),
@@ -1208,6 +1208,9 @@ class AppGroup {
     }
 
     destroy(skipRefCleanup) {
+        if (this.groupStateConnectionId) {
+            this.groupState.disconnect(this.groupStateConnectionId);
+        }
         this.signals.disconnectAllSignals();
         this.groupState.set({willUnmount: true});
 

@@ -287,7 +287,11 @@ class Workspace {
     windowWorkspaceChanged(display, metaWindow, metaWorkspace) {
         // If the window is removed the metaWorkspace will be null, in that
         // case we wouldn't want to add the window again.
-        if (metaWorkspace) this.windowAdded(metaWorkspace, metaWindow);
+        if (metaWorkspace && this.metaWorkspace.index() === metaWorkspace.index()) {
+            this.windowAdded(metaWorkspace, metaWindow);
+        } else {
+            this.windowRemoved(metaWorkspace, metaWindow);
+        }
     }
 
     windowAdded(metaWorkspace, metaWindow, app, isFavoriteApp) {
@@ -400,10 +404,9 @@ class Workspace {
 
         // Abort the remove if the window is just changing workspaces, window
         // should always remain indexed on all workspaces while its mapped.
-        // if (!metaWindow.showing_on_its_workspace()) return;
-        if ((this.state.settings.showAllWorkspaces) && (metaWindow.has_focus()
-            && global.workspace_manager.get_active_workspace_index()
-            !== metaWorkspace.index())) return;
+        if (this.state.settings.showAllWorkspaces && !this.state.removingWindowFromWorkspaces &&
+            metaWindow.has_focus() && (global.workspace_manager.get_active_workspace_index() !== metaWorkspace.index()))
+            return;
 
         // If the window is on all workspaces or we're showing all workspaces,
         // make sure to remove the window from all workspaces.
@@ -440,7 +443,7 @@ class Workspace {
 
                         const refAppId = this.appGroups[refApp].groupState.appId;
 
-                        this.appGroups[refApp].destroy(true);
+                        this.appGroups[refApp].destroy();
                         this.appGroups[refApp] = undefined;
                         this.appGroups.splice(refApp, 1);
 
@@ -460,7 +463,7 @@ class Workspace {
                         }
                     }
                 } else {
-                    this.appGroups[refApp].destroy(true);
+                    this.appGroups[refApp].destroy();
                     this.appGroups[refApp] = undefined;
                     this.appGroups.splice(refApp, 1);
                 }

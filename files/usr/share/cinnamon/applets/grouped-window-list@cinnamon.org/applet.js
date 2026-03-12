@@ -292,7 +292,7 @@ class GroupedWindowListApplet extends Applet.Applet {
         this.signals.connect(global.display, 'window-demands-attention', (...args) => this.updateAttentionState(...args));
         this.signals.connect(global.display, 'window-created', (...args) => this.onWindowCreated(...args));
         this.signals.connect(global.settings, 'changed::panel-edit-mode', (...args) => this.on_panel_edit_mode_changed(...args));
-        this.signals.connect(Main.themeManager, 'theme-set', (...args) => this.refreshCurrentWorkspace(...args));
+        this.signals.connect(Main.themeManager, 'theme-set', (...args) => this.refreshAllWorkspaces(...args));
         this.signals.connect(Main.messageTray, 'notify-applet-update', this._onNotificationReceived.bind(this));
         this.signals.connect(this.tracker, 'window-app-changed', (...args) => this._onWindowAppChanged(...args));
     }

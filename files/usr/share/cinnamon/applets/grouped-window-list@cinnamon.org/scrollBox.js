@@ -24,12 +24,12 @@ class ScrollBox {
         this.scrollView.set_clip_to_allocation(true);
         this.scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.EXTERNAL);
 
-        this.box = new St.BoxLayout({
+        this.container = new St.BoxLayout({
             vertical: !this.state.isHorizontal,
             style_class: 'grouped-window-list-scrollbox-container',
         });
 
-        this.scrollView.add_actor(this.box);
+        this.scrollView.add_actor(this.container);
 
         // Slider buttons
         this.startButton = new St.Bin({
@@ -90,7 +90,7 @@ class ScrollBox {
         this.signals.connect(this.scrollView, 'leave-event', () => this._stopSlide());
 
         // Track content size changes
-        this.signals.connect(this.box, 'allocation-changed', () => this.updateScrollButtonVisibility());
+        this.signals.connect(this.container, 'allocation-changed', () => this.updateScrollButtonVisibility());
 
         this.stateConnectionID = this.state.connect({
             orientation: (state) => this.on_orientation_changed()
@@ -135,7 +135,7 @@ class ScrollBox {
     }
 
     on_orientation_changed() {
-        this.box.vertical = !this.state.isHorizontal;
+        this.container.vertical = !this.state.isHorizontal;
 
         const managerOrientation = this.state.isHorizontal
             ? Clutter.Orientation.HORIZONTAL : Clutter.Orientation.VERTICAL;

@@ -58,7 +58,7 @@ class Workspace {
 
         this.scrollBox = new ScrollBox(this.state);
         this.actor = this.scrollBox.actor;
-        this.container = this.scrollBox.box;
+        this.container = this.scrollBox.container;
 
         this.appGroups = [];
         this.lastFocusedApp = null;

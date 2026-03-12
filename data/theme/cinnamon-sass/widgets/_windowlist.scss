@@ -127,10 +127,12 @@
       &-down {
         margin: 0;
         padding: 0;
+        min-width: 15px;
+        min-height: 20px;
       }
 
       &-icon {
-        icon-size: $scalable_icon_size * 0.875;
+        icon-size: $scalable_icon_size;
       }
     }
   }

@@ -47,7 +47,7 @@ class Workspace {
                         (!appGroup.groupState.lastFocused || appGroup.groupState.lastFocused.has_focus())) {
                         this.scrollToAppGroup(appGroup);
                         return;
-                    };
+                    }
                     appGroup.onFocusChange(false);
                 });
             }

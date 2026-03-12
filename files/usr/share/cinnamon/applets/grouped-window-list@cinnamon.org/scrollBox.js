@@ -367,7 +367,7 @@ class ScrollBox {
 
         if (this.state.settings.scrollBehavior !== 4) {
             this.state.trigger('handleScroll', event);
-            return;
+            return Clutter.EVENT_STOP;
         }
 
         // Handle horizontal scrolling with vertical wheel

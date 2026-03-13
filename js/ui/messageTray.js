@@ -396,11 +396,15 @@ var Notification = class Notification {
                     name: 'notification-scrollview',
                     vscrollbar_policy: St.PolicyType.AUTOMATIC,
                     hscrollbar_policy: St.PolicyType.NEVER,
-                    enable_mouse_scrolling: true});
+                    enable_mouse_scrolling: true,
+                    style_class: 'vfade'});
 
                 this._table.add(this._scrollArea, {
                     row: 1,
-                    col: 2
+                    col: 2,
+                    y_expand: false,
+                    y_fill: false,
+                    y_align: St.Align.START
                 });
 
                 let content = new St.BoxLayout({
@@ -412,22 +416,6 @@ var Notification = class Notification {
                 // body label
                 this._bodyUrlHighlighter = new URLHighlighter("", true, false);
                 content.add(this._bodyUrlHighlighter.actor);
-
-                this._scrollArea.connect('notify::allocation', () => {
-                    if (!this._bodyUrlHighlighter || this._scrollArea.width === 0) return;
-
-                    const monitor =  Main.layoutManager.findMonitorForActor(this.actor);
-
-                    const maxHeightToEnforce = Math.floor(monitor.height / 3);
-
-                    const [min_h, nat_h] = this._bodyUrlHighlighter.actor.get_preferred_height(this._scrollArea.width);
-
-                    let targetHeight = (maxHeightToEnforce > 0 && nat_h > maxHeightToEnforce) ? maxHeightToEnforce : nat_h;
-
-                    if (this._scrollArea.height !== targetHeight) {
-                        this._scrollArea.height = targetHeight;
-                    }
-                });
             }
             this._bodyUrlHighlighter.setMarkup(text, allowMarkup);
         } else {
@@ -509,7 +497,8 @@ var Notification = class Notification {
             x_expand: false,
             y_expand: false,
             x_fill: false,
-            y_fill: false
+            y_fill: false,
+            y_align: St.Align.START
         });
         this._updateLayout();
     }

@@ -56,7 +56,7 @@ class CinnamonNotificationsApplet extends Applet.TextIconApplet {
         Main.keybindingManager.removeXletHotKey(this, "notification-open");
         Main.keybindingManager.removeXletHotKey(this, "notification-clear");
         global.settings.disconnect(this.panelEditModeHandler);
-        
+
         MessageTray.extensionsHandlingNotifications--;
         if (MessageTray.extensionsHandlingNotifications === 0) {
             this._clear_all();
@@ -114,6 +114,14 @@ class CinnamonNotificationsApplet extends Applet.TextIconApplet {
         }));
         vscroll.connect('scroll-stop', Lang.bind(this, function() {
             this.menu.passEvents = false;
+        }));
+
+        let adjustment = this.scrollview.vscroll.adjustment;
+        adjustment.connect('changed', Lang.bind(this, function() {
+            let needsScroll = adjustment.upper > adjustment.page_size;
+            for (let i = 0; i < this.notifications.length; i++) {
+                this.notifications[i].setMouseScrolling(!needsScroll);
+            }
         }));
 
         // Alternative tray icons.

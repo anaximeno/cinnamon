@@ -19,8 +19,8 @@ class Workspace {
                 this.on_orientation_changed(state.orientation);
             },
             currentWs: (state) => {
-                if (this.state.settings.enableSlideToFocusedAppButton && this.metaWorkspace &&
-                    state.currentWs === this.metaWorkspace.index()) {
+                if (this.state?.settings?.enableSlideToFocusedAppButton && this.metaWorkspace &&
+                    state?.currentWs === this.metaWorkspace.index()) {
                     // --
                     this.scrollToLastFocusedApp();
                 }
@@ -474,7 +474,7 @@ class Workspace {
     }
 
     destroy() {
-        if (this.stateConnectionId) {
+        if (this.stateConnectionId > 0) {
             this.state.disconnect(this.stateConnectionId);
         }
         if (this.scrollToAppDebounceTimeoutId > 0) {

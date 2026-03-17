@@ -1205,7 +1205,7 @@ class AppGroup {
     }
 
     destroy(skipRefCleanup) {
-        if (this.groupStateConnectionId) {
+        if (this.groupStateConnectionId > 0) {
             this.groupState.disconnect(this.groupStateConnectionId);
         }
         this.signals.disconnectAllSignals();

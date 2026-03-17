@@ -103,7 +103,7 @@ class ScrollBox {
     destroy() {
         this._stopSlide();
         this._disconnectAdjustmentSignals();
-        if (this.stateConnectionID) {
+        if (this.stateConnectionID > 0) {
             this.state.disconnect(this.stateConnectionID);
         }
         this.signals.disconnectAllSignals();

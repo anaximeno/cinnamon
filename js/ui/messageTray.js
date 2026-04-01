@@ -394,10 +394,11 @@ var Notification = class Notification {
             if (!this._scrollArea) {
                 this._scrollArea = new St.ScrollView({
                     name: 'notification-scrollview',
-                    vscrollbar_policy: St.PolicyType.AUTOMATIC,
-                    hscrollbar_policy: St.PolicyType.NEVER,
-                    enable_mouse_scrolling: true,
-                    style_class: 'vfade'});
+                });
+
+                this._scrollArea.set_clip_to_allocation(true);
+
+                this.setBodyExpandEnabled(false);
 
                 this._table.add(this._scrollArea, {
                     row: 1,
@@ -411,6 +412,7 @@ var Notification = class Notification {
                     name: 'notification-body',
                     vertical: true
                 });
+
                 this._scrollArea.add_actor(content);
 
                 // body label
@@ -450,9 +452,12 @@ var Notification = class Notification {
             adjustment.value = adjustment.upper;
     }
 
-    setMouseScrolling(enabled) {
+    setBodyExpandEnabled(enabled) {
         if (this._scrollArea) {
-            this._scrollArea.enable_mouse_scrolling = enabled;
+            this._scrollArea.vscrollbar_policy = !enabled ? St.PolicyType.AUTOMATIC : St.PolicyType.NEVER;
+            this._scrollArea.hscrollbar_policy = St.PolicyType.NEVER;
+            this._scrollArea.enable_mouse_scrolling = !enabled;
+            this._table.set_style(`max-height: ${!enabled ? '20em' : 'auto'};`);
         }
     }
 
@@ -461,12 +466,6 @@ var Notification = class Notification {
             this._table.add_style_class_name('multi-line-notification');
         } else {
             this._table.remove_style_class_name('multi-line-notification');
-        }
-
-        if (this._imageBin) {
-            this._table.add_style_class_name('notification-with-image');
-        } else {
-            this._table.remove_style_class_name('notification-with-image');
         }
 
         if (this._scrollArea)

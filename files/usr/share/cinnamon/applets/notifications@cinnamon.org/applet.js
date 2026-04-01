@@ -64,7 +64,7 @@ class CinnamonNotificationsApplet extends Applet.TextIconApplet {
     }
 
     _openMenu() {
-        this._update_timestamp();
+        this._update_notification_status();
         this.menu.toggle();
     }
 
@@ -114,14 +114,6 @@ class CinnamonNotificationsApplet extends Applet.TextIconApplet {
         }));
         vscroll.connect('scroll-stop', Lang.bind(this, function() {
             this.menu.passEvents = false;
-        }));
-
-        let adjustment = this.scrollview.vscroll.adjustment;
-        adjustment.connect('changed', Lang.bind(this, function() {
-            let needsScroll = adjustment.upper > adjustment.page_size;
-            for (let i = 0; i < this.notifications.length; i++) {
-                this.notifications[i].setMouseScrolling(!needsScroll);
-            }
         }));
 
         // Alternative tray icons.
@@ -302,13 +294,17 @@ class CinnamonNotificationsApplet extends Applet.TextIconApplet {
         Util.spawnCommandLine("cinnamon-settings notifications");
     }
 
-    _update_timestamp() {
+    _update_notification_status() {
         let len = this.notifications.length;
         if (len > 0) {
             for (let i = 0; i < len; i++) {
                 let notification = this.notifications[i];
                 let orig_time = notification._timestamp;
                 notification._timeLabel.clutter_text.set_markup(timeify(orig_time));
+
+                // Disable body scroll for notifications to avoid having notifications with scrollable bodies
+                // inside the scrollable notification bin, which would be a bad user experience.
+                notification.setBodyExpandEnabled(true);
             }
         }
     }

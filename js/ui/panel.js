@@ -577,6 +577,9 @@ var PanelManager = GObject.registerClass({
         }
 
         setPanelsEnabledList(list);
+
+        // Make sure to clear remaining applets from this panel.
+        AppletManager.clearAppletConfiguration(panelId);
     }
 
     /**

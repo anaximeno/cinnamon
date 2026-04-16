@@ -773,12 +773,13 @@ function copyAppletConfiguration(panelId) {
 }
 
 function clearAppletConfiguration(panelId) {
+    let pId = parseInt(panelId);
     rawDefinitions = global.settings.get_strv("enabled-applets");
     let rawDefinitionsCopy = rawDefinitions.slice();
-    for (let i = 0; i < rawDefinitions.length; i++) {
+    for (let i = rawDefinitions.length - 1; i >= 0; i--) {
         let rawDefinition = rawDefinitions[i].split(':');
-        if (parseInt(rawDefinition[0].split('panel')[1]) === panelId) {
-            rawDefinitionsCopy.splice(rawDefinitionsCopy.indexOf(rawDefinitions[i]), 1);
+        if (parseInt(rawDefinition[0].split('panel')[1]) === pId) {
+            rawDefinitionsCopy.splice(i, 1);
         }
     }
     global.settings.set_strv("enabled-applets", rawDefinitionsCopy);

@@ -19,9 +19,7 @@ class Workspace {
                 this.on_orientation_changed(state.orientation);
             },
             currentWs: (state) => {
-                if (this.state?.settings?.enableSlideToFocusedAppButton && this.metaWorkspace &&
-                    state?.currentWs === this.metaWorkspace.index()) {
-                    // --
+                if (this.metaWorkspace && (state?.currentWs === this.metaWorkspace.index())) {
                     this.scrollToLastFocusedApp();
                 }
             }
@@ -45,7 +43,7 @@ class Workspace {
             },
             updateFocusState: (focusedAppId) => {
                 this.appGroups.forEach( appGroup => {
-                    if (this.state.settings.enableSlideToFocusedAppButton && (focusedAppId === appGroup.groupState.appId) &&
+                    if ((focusedAppId === appGroup.groupState.appId) &&
                         (!appGroup.groupState.lastFocused || appGroup.groupState.lastFocused.has_focus())) {
                         // --
                         this.scrollToAppGroup(appGroup);
